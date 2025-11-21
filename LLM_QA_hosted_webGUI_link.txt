@@ -1,4 +1,4 @@
 Name: Davida Essen
 Matric Number: 23CG034071
-Live URL: https://your-app-url.streamlit.app
+Live URL: https://llmappprojectdavida23cg034071-npwgpsbhgrlmd7aemmwz4o.streamlit.app/
 GitHub Repository: https://github.com/veeedahhh/LLM_QA_Project_Davida_23CG034071
