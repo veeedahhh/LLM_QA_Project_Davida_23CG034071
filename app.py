@@ -1,6 +1,6 @@
 
 import streamlit as st
-import openai
+from openai import OpenAI
 
 # -----------------------------
 # Streamlit UI
@@ -11,25 +11,25 @@ st.title("🌟LLM Q&A App")
 user_question = st.text_input("Ask your question:")
 
 # -----------------------------
-# OpenAI API function
+# OpenAI API function (v1.0+)
 # -----------------------------
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])  # Make sure to add your API key in Streamlit Secrets
+
 def ask_llm(question):
     """
-    Ask the LLM using the new ChatCompletion API.
+    Ask the LLM using OpenAI v1.0+ API.
     """
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": question}
             ],
-            temperature=0.5,
+            temperature=0.5
         )
-        # Extract the assistant's reply
-        answer = response.choices[0].message['content'].strip()
+        answer = response.choices[0].message.content.strip()
         return answer
-
     except Exception as e:
         return f"Error: {str(e)}"
 
@@ -38,6 +38,6 @@ def ask_llm(question):
 # -----------------------------
 if user_question:
     with st.spinner("Thinking..."):
-        processed_question = user_question  # Keep any preprocessing you had
+        processed_question = user_question
         answer = ask_llm(processed_question)
         st.success(answer)
