@@ -1,43 +1,43 @@
+
 import streamlit as st
 import openai
-import string
-import os
 
-# Use environment variable for API key (safer for deployment)
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# -----------------------------
+# Streamlit UI
+# -----------------------------
+st.title("🌟LLM Q&A App")
 
-def preprocess_question(question):
-    question = question.lower()
-    question = question.translate(str.maketrans('', '', string.punctuation))
-    return question
+# User input
+user_question = st.text_input("Ask your question:")
 
+# -----------------------------
+# OpenAI API function
+# -----------------------------
 def ask_llm(question):
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=question,
-        max_tokens=150,
-        temperature=0.5
-    )
-    return response.choices[0].text.strip()
+    """
+    Ask the LLM using the new ChatCompletion API.
+    """
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": question}
+            ],
+            temperature=0.5,
+        )
+        # Extract the assistant's reply
+        answer = response.choices[0].message['content'].strip()
+        return answer
 
-# Streamlit styling
-st.markdown("""
-<style>
-h1 {color: darkblue; text-align: center;}
-div.stTextInput>div>input {background-color: #f0f0f0; padding: 10px;}
-div.stButton>button {background-color: darkblue; color: white; padding: 10px 20px;}
-</style>
-""", unsafe_allow_html=True)
+    except Exception as e:
+        return f"Error: {str(e)}"
 
-st.title("🌟 NLP Question & Answering System")
-
-user_question = st.text_input("Enter your question:")
-
-if st.button("Get Answer"):
-    if user_question:
-        processed_question = preprocess_question(user_question)
-        st.write(f"**Processed Question:** {processed_question}")
+# -----------------------------
+# Streamlit interaction
+# -----------------------------
+if user_question:
+    with st.spinner("Thinking..."):
+        processed_question = user_question  # Keep any preprocessing you had
         answer = ask_llm(processed_question)
-        st.write(f"**Answer:** {answer}")
-    else:
-        st.write("Please enter a question first!")
+        st.success(answer)
